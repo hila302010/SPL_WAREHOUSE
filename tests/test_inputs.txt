@@ -1,0 +1,211 @@
+# =========================================
+# COMPREHENSIVE WAREHOUSE TEST SCENARIOS
+# =========================================
+# 
+# Instructions: Uncomment sections to test specific functionality
+# Usage: ./bin/run configFileExample.txt < test_inputs.txt
+
+# =========================================
+# BASIC CUSTOMER & VOLUNTEER TESTS
+# =========================================
+
+# Test all customers from config file
+customerStatus 0
+customerStatus 1
+customerStatus 99
+
+# Test all volunteers from config file  
+volunteerStatus 0
+volunteerStatus 1
+volunteerStatus 2
+volunteerStatus 3
+volunteerStatus 99
+
+close
+
+# =========================================
+# ORDER CREATION EDGE CASES
+# =========================================
+
+# # Test valid and invalid order creation
+# order 0          # Should work (Moshe has 2 orders)
+# order 0          # Should work (Moshe now has 1 order left)
+# order 0          # Should fail (Moshe maxed out)
+# order 1          # Should work (Ron has 1 order)
+# order 1          # Should fail (Ron maxed out)
+# order 99         # Should fail (customer doesn't exist)
+# customerStatus 0
+# customerStatus 1
+# close
+
+# =========================================
+# SIMULATION PROGRESSION TESTS
+# =========================================
+
+# # Test order lifecycle progression
+# order 0
+# orderStatus 0    # Should be PENDING
+# step 1
+# orderStatus 0    # Should be COLLECTING
+# volunteerStatus 0 # Collector should be busy
+# step 1
+# orderStatus 0    # Should be COLLECTING (still processing)
+# step 1  
+# orderStatus 0    # Should be PENDING (moved back, ready for driver)
+# step 1
+# orderStatus 0    # Should be DELIVERING
+# volunteerStatus 2 # Driver should be busy
+# step 1
+# orderStatus 0    # Should be DELIVERING (still processing)
+# step 1
+# orderStatus 0    # Should be COMPLETED
+# close
+
+# =========================================
+# MULTIPLE ORDER MANAGEMENT
+# =========================================
+
+# # Test multiple orders processing
+# order 0
+# order 1
+# orderStatus 0
+# orderStatus 1
+# step 1
+# orderStatus 0
+# orderStatus 1
+# volunteerStatus 0
+# volunteerStatus 1
+# step 2
+# orderStatus 0
+# orderStatus 1
+# step 3
+# orderStatus 0
+# orderStatus 1
+# close
+
+# =========================================
+# VOLUNTEER EXHAUSTION TESTS
+# =========================================
+
+# # Test limited volunteer behavior
+# order 1          # Use limited collector (volunteer 1)
+# step 1
+# volunteerStatus 1 # Should show busy
+# step 3
+# volunteerStatus 1 # Should show available again
+# order 1          # Should work (if customer has orders left)
+# step 1
+# volunteerStatus 1 # Should be busy again
+# step 3
+# volunteerStatus 1 # Check if volunteer is deleted (maxOrders=2)
+# close
+
+# =========================================
+# DYNAMIC CUSTOMER ADDITION
+# =========================================
+
+# # Test adding customers during runtime
+# customer Alice soldier 3 2
+# customer Bob civilian 4 1
+# customer Charlie invalid 1 1  # Should fail
+# customerStatus 2
+# customerStatus 3
+# order 2
+# order 3
+# orderStatus 2
+# orderStatus 3
+# close
+
+# =========================================
+# COMMAND SYNTAX ERROR TESTS
+# =========================================
+
+# # Test all command syntax errors
+# order            # Missing customer ID
+# customerStatus   # Missing customer ID
+# volunteerStatus  # Missing volunteer ID
+# orderStatus      # Missing order ID
+# step             # Missing step count
+# customer         # Missing parameters
+# customer Alice   # Missing parameters
+# customer Alice soldier # Missing parameters
+# customer Alice soldier 3 # Missing parameters
+# invalidcommand   # Invalid command
+# 
+# # Empty commands
+# 
+# 
+# 
+# close
+
+# =========================================
+# ACTION LOGGING TESTS
+# =========================================
+
+# # Test comprehensive action logging
+# order 0
+# order 99         # Failed action
+# customerStatus 0
+# customerStatus 99 # Failed action
+# volunteerStatus 0
+# step 1
+# orderStatus 0
+# log              # Should show all actions with status
+# close
+
+# =========================================
+# BACKUP AND RESTORE TESTS
+# =========================================
+
+# # Test backup/restore functionality
+# order 0
+# orderStatus 0    # Should be PENDING
+# backup
+# step 2
+# orderStatus 0    # Should be COLLECTING or later
+# restore
+# orderStatus 0    # Should be back to PENDING
+# step 1
+# orderStatus 0    # Should progress normally
+# close
+
+# =========================================
+# STRESS TEST SCENARIOS
+# =========================================
+
+# # Complex scenario with multiple operations
+# customer TestUser1 soldier 2 3
+# customer TestUser2 civilian 5 2
+# order 0
+# order 1
+# order 2
+# order 3
+# step 1
+# orderStatus 0
+# orderStatus 1  
+# orderStatus 2
+# orderStatus 3
+# volunteerStatus 0
+# volunteerStatus 1
+# volunteerStatus 2
+# volunteerStatus 3
+# step 2
+# customerStatus 0
+# customerStatus 1
+# customerStatus 2
+# customerStatus 3
+# step 5
+# log
+# close
+
+# =========================================
+# CLOSE COMMAND COMPREHENSIVE TEST
+# =========================================
+
+# # Test close command with various order states
+# order 0          # Will be pending
+# step 1           # Move to collecting
+# order 1          # Another pending order
+# step 2           # Process further
+# # Don't add 'close' here - it will be added automatically
+# # This should show orders in different states when program closes
